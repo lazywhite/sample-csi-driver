@@ -1,25 +1,21 @@
-kind: Deployment
-apiVersion: apps/v1
+kind: DaemonSet
+apiVersion: extensions/v1beta1
 metadata:
-  name: kvm-csi-driver
-  namespace: csi-dev
+  name: sample-csi-driver
 spec:
-  replicas: 1
   selector:
     matchLabels:
-      app: kvm-csi-driver
+      app: sample-csi-driver
   template:
     metadata:
       labels:
-        app: kvm-csi-driver
+        app: sample-csi-driver
     spec:
-      nodeSelector:
-        kubernetes.io/hostname: knode02
-      serviceAccount: kvm-csi-driver
+      serviceAccount: sample-csi-driver
       containers:
         #plugin
-        - name: kvm-csi-driver
-          image: xnile/kvm-csi-driver:v0.1
+        - name: sample-csi-driver
+          image: sample-csi-driver:v1
           args:
             - --endpoint=$(CSI_ENDPOINT)
             - --nodeid=$(KUBE_NODE_NAME)
@@ -53,12 +49,12 @@ spec:
           lifecycle:
             preStop:
               exec:
-                command: ["/bin/sh", "-c", "rm -rf /registration/kvm.csi.dianduidian.com-reg.sock /csi/csi.sock"]
+                command: ["/bin/sh", "-c", "rm -rf /registration/sample.csi.com-reg.sock /csi/csi.sock"]
           env:
             - name: ADDRESS
               value: /csi/csi.sock
             - name: DRIVER_REG_SOCK_PATH
-              value: /var/lib/kubelet/plugins/kvm.csi.dianduidian.com/csi.sock
+              value: /var/lib/kubelet/plugins/sample.csi.com/csi.sock
           volumeMounts:
             - name: plugin-dir
               mountPath: /csi
@@ -73,13 +69,14 @@ spec:
           volumeMounts:
             - name: plugin-dir
               mountPath: /csi
-        #Sidecar: csi-provisione
+        #Sidecar: csi-provisioner
         - name: csi-provisioner
           image: quay.io/k8scsi/csi-provisioner:v1.3.1
           args:
             - "--csi-address=$(ADDRESS)"
             - "--v=5"
-            - "--feature-gates=Topology=True"
+            #- "--feature-gates=Topology=True"
+            - "--enable-leader-election"
           env:
             - name: ADDRESS
               value: unix:///csi/csi.sock
@@ -93,6 +90,7 @@ spec:
           args:
             - "--v=5"
             - "--csi-address=$(ADDRESS)"
+            - "--leader-election"
           env:
             - name: ADDRESS
               value: /csi/csi.sock
@@ -107,7 +105,7 @@ spec:
             type: Directory
         - name: plugin-dir
           hostPath:
-            path: /var/lib/kubelet/plugins/kvm.csi.dianduidian.com/
+            path: /var/lib/kubelet/plugins/sample.csi.com/
             type: DirectoryOrCreate
         - name: registration-dir
           hostPath:

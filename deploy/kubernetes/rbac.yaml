@@ -1,14 +1,13 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: kvm-csi-driver
-  namespace: csi-dev
+  name: sample-csi-driver
 
 ---
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: kvm-csi-driver
+  name: sample-csi-driver
 rules:
   - apiGroups: [""]
     resources: ["secrets"]
@@ -60,12 +59,12 @@ rules:
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: kvm-csi-driver
+  name: sample-csi-driver
 subjects:
   - kind: ServiceAccount
-    name: kvm-csi-driver
-    namespace: csi-dev
+    name: sample-csi-driver
+    namespace: default
 roleRef:
   kind: ClusterRole
-  name: kvm-csi-driver
+  name: sample-csi-driver
   apiGroup: rbac.authorization.k8s.io

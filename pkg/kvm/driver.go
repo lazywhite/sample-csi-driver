@@ -19,7 +19,7 @@ type Driver struct {
 
 const (
 	version       = "1.0.0"
-	driverName    = "kvm.csi.dianduidian.com"
+	driverName    = "sample.csi.com"
 	DevicePathKey = "devicePath"
 )
 

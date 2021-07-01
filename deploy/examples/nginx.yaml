@@ -1,8 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nginx-test-csi-pvc
-  namespace: csi-dev
+  name: nginx-test
   labels:
     app: nginx
 spec:
@@ -14,11 +13,9 @@ spec:
       labels:
         app: nginx
     spec:
-      nodeSelector:
-        kubernetes.io/hostname: knode02
       containers:
       - name: nginx
-        image: nginx:1.17
+        image: nginx:latest
         ports:
         - containerPort: 80
         volumeMounts:
@@ -27,4 +24,4 @@ spec:
       volumes:
         - name: data
           persistentVolumeClaim:
-            claimName: kvm-csi-pvc-01
+            claimName: sample-pvc-01
